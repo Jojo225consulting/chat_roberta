@@ -10,7 +10,7 @@ import os
 import torch
 import datetime
 import joblib
-
+import streamlit as st
 
 import sys
 sys.path.append("file")
@@ -76,7 +76,7 @@ class model:
 if __name__ == "__main__":
     prediction = model().load_models()
     print("Modèles chargés avec succès !")
-
-    print("prédictions \n", prediction)
+    
+    st.write("prédictions \n", prediction)
 
 # Chargement de données
