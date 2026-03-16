@@ -47,7 +47,7 @@ class model:
         dataset_test = load_dataset("jingjietan/essays-big5")["test"].select(range(5))
         print("Nom des colonnes du jeu de données train brut : ", dataset_test.column_names)
 
-        class_vectorizing = vectorizing_data.vectorizing_data("C:/Users/etulyon1/Downloads" + "/save_model/tokenizer", self.feature_extractor)
+        class_vectorizing = vectorizing_data.vectorizing_data("save_model/tokenizer", self.feature_extractor)
         tokenized_test = dataset_test.map(class_vectorizing.tokenization, batched=True)
 
         tokenized_test = preprocessing_data.CombineLabels(tokenized_test).dataset_with_labels
