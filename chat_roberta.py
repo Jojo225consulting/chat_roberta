@@ -23,7 +23,7 @@ import preprocessing_data
 class model:
     def __init__(self, data_json):
 
-        df = pd.read_json(data_csv)
+        df = pd.read_json(data_json)
         self.dataset = Dataset.from_pandas(df)
         
         repo_dir = snapshot_download(repo_id="Jojo225consulting/Demdem",local_dir="./model_cache")
