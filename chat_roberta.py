@@ -1,7 +1,7 @@
 from huggingface_hub import snapshot_download
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding, AutoModel
 from torch.utils.data import DataLoader
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 import torch.nn as nn
 #import evaluate
 import pandas as pd
@@ -21,9 +21,12 @@ import preprocessing_data
 
 
 class model:
-    def __init__(self):
+    def __init__(self, data_json):
 
-        repo_dir = snapshot_download(repo_id="Jojo225consulting/Demdem")
+        df = pd.read_json(data_csv)
+        self.dataset = Dataset.from_pandas(df)
+        
+        repo_dir = snapshot_download(repo_id="Jojo225consulting/Demdem",local_dir="./model_cache")
 
         self.base_model = AutoModel.from_pretrained(
             repo_dir + "/save_model/pretrained_embeddings_model",
@@ -44,10 +47,10 @@ class model:
         )
 
     def load_models(self):
-        dataset_test = load_dataset("jingjietan/essays-big5")["test"].select(range(5))
-        print("Nom des colonnes du jeu de données train brut : ", dataset_test.column_names)
+        print("Nom des colonnes du jeu de données train brut : ", self.dataset.column_names)
 
         class_vectorizing = vectorizing_data.vectorizing_data("save_model/tokenizer", self.feature_extractor)
+        
         tokenized_test = dataset_test.map(class_vectorizing.tokenization, batched=True)
 
         tokenized_test = preprocessing_data.CombineLabels(tokenized_test).dataset_with_labels
@@ -73,10 +76,15 @@ class model:
     # model_svm = joblib.load(load_directory + "/svm/svm_on_roberta_v5.joblib")
 
 
+uploaded_file = st.file_uploader("Choisissez un fichier JSON contenant les conversations", type=["json"])
+
 if __name__ == "__main__":
-    prediction = model().load_models()
-    print("Modèles chargés avec succès !")
-    
-    st.write("prédictions \n", prediction)
+
+    if uploaded_file is not None:
+        prediction = model(data_json = uploaded_file)
+        prediction = prediction.load_models()
+        print("Modèles chargés avec succès !")
+        
+        st.write("prédictions \n", prediction)
 
 # Chargement de données
