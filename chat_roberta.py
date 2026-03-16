@@ -53,10 +53,11 @@ class model:
         
         tokenized_test = dataset_test.map(class_vectorizing.tokenization, batched=True)
 
-        tokenized_test = preprocessing_data.CombineLabels(tokenized_test).dataset_with_labels
+        # tokenized_test = preprocessing_data.CombineLabels(tokenized_test).dataset_with_labels
+        
         tokenized_test.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
 
-        X_test, Y_test = class_vectorizing.extract_embeddings(DataLoader(tokenized_test, batch_size=16, shuffle=True))
+        X_test = class_vectorizing.extract_embeddings(DataLoader(tokenized_test, batch_size=16, shuffle=True)) #suppression de Y_test près de X_test
         probas_test = self.model_svm.predict_proba(X_test)
 
         return probas_test
