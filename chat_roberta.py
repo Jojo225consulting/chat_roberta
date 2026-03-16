@@ -51,7 +51,7 @@ class model:
 
         class_vectorizing = vectorizing_data.vectorizing_data("save_model/tokenizer", self.feature_extractor)
         
-        tokenized_test = dataset_test.map(class_vectorizing.tokenization, batched=True)
+        tokenized_test = self.dataset.map(class_vectorizing.tokenization, batched=True)
 
         # tokenized_test = preprocessing_data.CombineLabels(tokenized_test).dataset_with_labels
         
