@@ -1,4 +1,4 @@
-#from transformers import pipeline
+from huggingface_hub import snapshot_download
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding, AutoModel
 from torch.utils.data import DataLoader
 from datasets import load_dataset
@@ -9,13 +9,6 @@ import numpy as np
 import os
 import torch
 import datetime
-
-
-from sklearn.svm import LinearSVC, SVC
-
-
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 import joblib
 
 
@@ -29,20 +22,32 @@ import preprocessing_data
 
 class model:
     def __init__(self):
-        self.directory = "C:\\Users\\etulyon1\\Downloads\\drive-download-20260316T100612Z-3-001"
-        self.tokenizer = AutoTokenizer.from_pretrained(self.directory + "/tokenizer")
-        self.base_model = AutoModel.from_pretrained(self.directory + "/pretrained_embeddings_model", add_pooling_layer=False)
+
+        repo_dir = snapshot_download(repo_id="Jojo225consulting/Demdem")
+
+        self.base_model = AutoModel.from_pretrained(
+            repo_dir + "/save_model/pretrained_embeddings_model",
+            add_pooling_layer=False
+        )
         self.base_model.eval()
         self.feature_extractor = RobertaFeatureExtractor(self.base_model)  # modèle “vide” avec la même architecture
-        self.feature_extractor.load_state_dict(torch.load( self.directory + "/final_embedding_model/feature_extractor.pt", map_location=torch.device('cpu')))  # charger les poids entraînés
+
+        self.feature_extractor.load_state_dict(
+            torch.load(
+                repo_dir + "/save_model/final_embedding_model/feature_extractor.pt",
+                map_location=torch.device("cpu")
+            )
+        )
         self.feature_extractor.eval()
-        self.model_svm = joblib.load(self.directory + "/svm/svm_on_roberta_v5.joblib")
+        self.model_svm = joblib.load(
+            repo_dir + "/save_model/svm/svm_on_roberta_v5.joblib"
+        )
 
     def load_models(self):
         dataset_test = load_dataset("jingjietan/essays-big5")["test"].select(range(5))
         print("Nom des colonnes du jeu de données train brut : ", dataset_test.column_names)
 
-        class_vectorizing = vectorizing_data.vectorizing_data(self.directory+"/tokenizer", self.feature_extractor)
+        class_vectorizing = vectorizing_data.vectorizing_data("C:/Users/etulyon1/Downloads" + "/save_model/tokenizer", self.feature_extractor)
         tokenized_test = dataset_test.map(class_vectorizing.tokenization, batched=True)
 
         tokenized_test = preprocessing_data.CombineLabels(tokenized_test).dataset_with_labels
