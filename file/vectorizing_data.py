@@ -11,7 +11,7 @@ class vectorizing_data:
 
     # Tokenization
   def tokenization(self, example, **kwargs):
-      return self.tokenizer(example["text"], truncation=True, padding="max_length", max_length=512)
+      return self.tokenizer(example["Loan Title"], truncation=True, padding="max_length", max_length=512)
       
 
   #Extraction des embeddings
