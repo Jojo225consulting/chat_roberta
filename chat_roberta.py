@@ -23,7 +23,8 @@ import preprocessing_data
 class model:
     def __init__(self, data_json):
 
-        df = pd.read_json(data_json)
+        df = pd.DataFrame.from_dict(data_json, orient="index")
+        self.keys = list(df.index)
         self.dataset = Dataset.from_pandas(df)
         
         repo_dir = snapshot_download(repo_id="Jojo225consulting/Demdem",local_dir="./model_cache")
@@ -60,7 +61,7 @@ class model:
         X_test = class_vectorizing.extract_embeddings(DataLoader(tokenized_test, batch_size=16, shuffle=True)) #suppression de Y_test près de X_test
         probas_test = self.model_svm.predict_proba(X_test)
 
-        return probas_test
+        return [self.keys, probas_test]
 
 
     # load_directory = "C:\\Users\\etulyon1\\Downloads\\drive-download-20260316T100612Z-3-001"
@@ -84,8 +85,12 @@ if __name__ == "__main__":
     if uploaded_file is not None:
         prediction = model(data_json = uploaded_file)
         prediction = prediction.load_models()
+        inference = pd.DataFrame(data=prediction[1],
+                     columns = ["Openness", "Conscientiousness", "Extraversion","Agreeableness", "Neuroticism"]
+                    )
+        inference["id"] = prediction[0]  
         print("Modèles chargés avec succès !")
         
-        st.write("prédictions \n", prediction)
+        st.write("prédictions \n", inference)
 
 # Chargement de données
