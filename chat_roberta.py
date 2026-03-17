@@ -23,6 +23,7 @@ import preprocessing_data
 class model:
     def __init__(self, data_json):
 
+        data_json = json.load(data_json)
         df = pd.DataFrame.from_dict(data_json, orient="index")
         self.keys = list(df.index)
         self.dataset = Dataset.from_pandas(df)
