@@ -38,7 +38,7 @@ try:
     if st.button("Ajouter le fichier"):
         if uploaded_file is not None:
             st.write("Fichier uploadé :", uploaded_file.name)
-            data = uploaded_file.to_read()
+            data = uploaded_file.read()
             # Encodage base64 (obligatoire pour GitHub API)
             content = base64.b64encode(data).decode("utf-8")
             # Infos repo
