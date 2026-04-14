@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 import os
 import torch
-import datetime
+from datetime import datetime
 import joblib
 import streamlit as st
 import json
@@ -89,8 +89,19 @@ if __name__ == "__main__":
         inference = pd.DataFrame(data=prediction[1],
                      columns = ["Openness", "Conscientiousness", "Extraversion","Agreeableness", "Neuroticism"]
                     )
-        inference["id"] = prediction[0]  
+        inference["ID"] = prediction[0]  
         print("Modèles chargés avec succès !")
         st.write("prédictions \n", inference)
+
+    try:
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        st.download_button(
+            label="📥 Télécharger les inférences de Roberta Ici",
+            data = inference.to_csv(index=False).encode("utf-8"),
+            file_name= f"roberta_answers_{date_str}.csv",
+            mime="text/csv"
+        )
+    except:
+        pass
 
 # Chargement de données
