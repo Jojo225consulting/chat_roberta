@@ -73,7 +73,7 @@ class model:
         
         tokenized_test.set_format(type="torch", columns=["input_ids", "attention_mask"])
 
-        X_test = class_vectorizing.extract_embeddings(DataLoader(tokenized_test, batch_size=16, shuffle=True)) #suppression de Y_test près de X_test
+        X_test = class_vectorizing.extract_embeddings(DataLoader(tokenized_test, batch_size=16, shuffle=False)) #suppression de Y_test près de X_test
         probas_test = self.model_svm.predict_proba(X_test)
 
         return [self.keys, probas_test]
