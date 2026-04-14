@@ -38,10 +38,11 @@ try:
     if st.button("Ajouter le fichier"):
         if uploaded_file is not None:
             st.write("Fichier uploadé :", uploaded_file.name)
+            data = uploaded_file.to_csv()
             # Encodage base64 (obligatoire pour GitHub API)
-            content = base64.b64encode(uploaded_file.read().encode("utf-8")).decode("utf-8")
+            content = base64.b64encode(data.encode("utf-8")).decode("utf-8")
             # Infos repo
-            url = f"https://api.github.com/repos/{repo}/contents/csv_file/{uploaded_file.name}"
+            url = f"https://api.github.com/repos/{repo}/contents/csv_file/{data.name}"
             headers = {"Authorization": f"token {token}"}
             payload = {
                 "message": "adding new csv file",
