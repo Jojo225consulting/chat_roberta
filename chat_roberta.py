@@ -25,8 +25,21 @@ class model:
     def __init__(self, data_json):
 
         data_json = json.load(data_json)
-        df = pd.DataFrame.from_dict(data_json, orient="index")
-        self.keys = list(df.index)
+
+        rows = []
+        for item in data_json:
+            for key, values in item.items():
+                texts = []
+                
+                for d in values:
+                    texts.append(d["content"])
+                rows.append({
+                    "ID": key,
+                    "text": "~".join(texts)
+                })
+        df = pd.DataFrame(rows)
+
+        self.keys = list(df["ID"])
         self.dataset = Dataset.from_pandas(df)
         
         repo_dir = snapshot_download(repo_id="Jojo225consulting/Demdem",local_dir="./model_cache")
@@ -66,20 +79,6 @@ class model:
         return [self.keys, probas_test]
 
 
-    # load_directory = "C:\\Users\\etulyon1\\Downloads\\drive-download-20260316T100612Z-3-001"
-    # print("Bonjour")
-    # tokenizer = AutoTokenizer.from_pretrained(load_directory + "/tokenizer")
-    # print("Tokenizer chargé avec succès !")
-    # base_model = AutoModel.from_pretrained(load_directory + "/pretrained_embeddings_model", add_pooling_layer=False)
-    # base_model.eval()
-
-    # feature_extractor = RobertaFeatureExtractor(base_model)  # modèle “vide” avec la même architecture
-    # feature_extractor.load_state_dict(torch.load( load_directory + "/final_embedding_model/feature_extractor.pt", map_location=torch.device('cpu')))  # charger les poids entraînés
-    # feature_extractor.eval()
-
-    # model_svm = joblib.load(load_directory + "/svm/svm_on_roberta_v5.joblib")
-
-
 uploaded_file = st.file_uploader("Choisissez un fichier JSON contenant les conversations", type=["json"])
 
 if __name__ == "__main__":
@@ -92,7 +91,6 @@ if __name__ == "__main__":
                     )
         inference["id"] = prediction[0]  
         print("Modèles chargés avec succès !")
-        
         st.write("prédictions \n", inference)
 
 # Chargement de données
